@@ -9,10 +9,10 @@ def exec(query)
 end
 
 def drop_tables
-  DB[:conn].execute("DROP TABLE users")
-  DB[:conn].execute("DROP TABLE moviesusers")
-  DB[:conn].execute("DROP TABLE movies")
-  DB[:conn].execute("DROP TABLE genres")
+  DB[:conn].execute("DROP TABLE IF EXISTS users")
+  DB[:conn].execute("DROP TABLE IF EXISTS moviesuserss")
+  DB[:conn].execute("DROP TABLE IF EXISTS movies")
+  DB[:conn].execute("DROP TABLE IF EXISTS genres")
 end
 
 require_all 'app'

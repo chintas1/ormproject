@@ -6,7 +6,7 @@ class Movie
 
   ATTRIBUTES = {
     id: "INTEGER PRIMARY KEY",
-    title: "TEXT",
+    name: "TEXT",
     genre_id: "INTEGER"
   }
   attr_accessor(*self.public_attributes)  

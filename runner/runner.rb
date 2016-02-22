@@ -1,9 +1,10 @@
 require_relative '../config/environment.rb'
 puts "Welcome to your movie collection manager."
 puts "Please enter a username to create your profile."
-# creates a new user object, runs the 'welcome' user view
-username = gets.chomp
-puts "Welcome #{username}!"
+
+controller = UserController.new
+user = controller.new_user
+
 action=""
 while action != "exit"
   puts "Do you want to work on your profile or collection?"
@@ -25,5 +26,12 @@ while action != "exit"
           puts "Your favorite genre is #{User.get_favorite_genre}."
       end
     when "collection"
+      puts "Do you want to add a movie('A'), lookup a movie ('L'), or remove a movie ('R')?"
+      action=gets.chomp
+      case action
+        when 'A'
+          controller = UserController.new
+          controller.add_movie(user)
+      end
   end 
 end

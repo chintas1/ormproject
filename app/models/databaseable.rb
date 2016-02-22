@@ -54,8 +54,8 @@ module Databaseable
 
       row = self.db.execute(sql, name)
 
-      self.object_from_row(row.first)
-    end      
+      self.object_from_row(row.first) unless row.empty?
+    end
 
     def all
       sql = <<-SQL
@@ -86,6 +86,7 @@ module Databaseable
       object
     end    
   end
+  ###
   module InstanceMethods
     def initialize(attributes = {})
       self.class.public_attributes.each do |attribute|  

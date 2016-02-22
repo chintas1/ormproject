@@ -2,11 +2,12 @@ require 'bundler/setup'
 Bundler.require
 
 DB = {:conn => SQLite3::Database.new("movieapp.db")}
-DB[:conn].execute("DROP TABLE IF EXISTS movies")
-DB[:conn].execute("DROP TABLE IF EXISTS users")
-DB[:conn].execute("DROP TABLE IF EXISTS connections")
+DB[:conn].execute("DROP TABLE IF EXISTS movies;")
+DB[:conn].execute("DROP TABLE IF EXISTS users;")
+DB[:conn].execute("DROP TABLE IF EXISTS connections;")
 
-create_movies = <<-SQL
+create_movies = <<-SQL 
+CREATE TABLE movies(
   id INTEGER PRIMARY KEY,
   title TEXT,
   year INTEGER,
@@ -26,19 +27,21 @@ create_movies = <<-SQL
   imdb_rating INTEGER,
   imdb_votes INTEGER,
   imdb_id TEXT,
-  type TEXT;
+  type TEXT);
 SQL
 
-create_users = <<-SQL
+create_users = <<-SQL 
+CREATE TABLE users(
   id INTEGER PRIMARY KEY,
   name TEXT,
-  favorite_movie_id INTEGER;
+  favorite_movie_id INTEGER);
 SQL
 
-create_connections = <<-SQL
+create_connections = <<-SQL 
+CREATE TABLE connections(
   id INTEGER PRIMARY KEY,
   movie_id INTEGER,
-  user_id INTEGER;
+  user_id INTEGER);
 SQL
 
 DB[:conn].execute(create_movies)

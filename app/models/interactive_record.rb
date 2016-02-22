@@ -1,63 +1,157 @@
-require_relative '../../config/environment.rb'
-class InteractiveRecord
-  def self.table_name
-    self.to_s.downcase.pluralize
+module Databaseable
+  module ClassMethods
+    def public_attributes
+      self::ATTRIBUTES.keys.reject {|key| key == :id }
+    end
+
+    def attributes
+      self::ATTRIBUTES
+    end
+
+    def db
+      DB[:conn]
+    end
+
+    def table_name
+      "#{self.to_s.downcase}s"
+    end
+
+    def create_table
+      column_attributes = self.attributes.map do |attribute_name, attribute_characteristic|
+        "#{attribute_name.to_s} #{attribute_characteristic}" 
+      end.join(", ")
+      
+      sql = <<-SQL
+        CREATE TABLE IF NOT EXISTS #{self.table_name} (
+          #{column_attributes}
+        )
+      SQL
+      db.execute(sql)
+    end
+
+    def drop_table
+      sql = <<-SQL
+        DROP TABLE #{self.table_name}
+      SQL
+
+      db.execute(sql)
+    end
+
+    def find(id)
+    sql = <<-SQL
+      SELECT * FROM #{self.table_name} WHERE id = ?;
+    SQL
+
+    row = self.db.execute(sql, id)
+
+    self.object_from_row(row.first)
   end
 
-  def table_name_for_insert
-    self.class.table_name
+    def all
+      sql = <<-SQL
+        SELECT * FROM #{self.table_name};
+      SQL
+
+      rows = db.execute(sql)
+      rows.map do |row|
+        self.object_from_row(row)
+      end
+    end
+
+    def objects_from_rows(rows)
+      rows.map do |row|
+        self.object_from_row(row)
+      end
+    end    
+
+    def object_from_row(row)
+      public_values = row[1..-1]
+      zipped = self.public_attributes.zip(public_values)
+      
+      hash = Hash[zipped]
+      
+      object = self.new(hash)
+
+      object.instance_variable_set("@id", row[0])
+      object
+    end    
+  end
+  module InstanceMethods
+    def initialize(attributes = {})
+      self.class.public_attributes.each do |attribute|  
+        self.send("#{attribute}=", attributes[attribute])  
+      end
+    end
+
+  def save
+    if persisted?
+      update
+    else
+      insert
+    end
+    self
   end
 
-  def col_names_for_insert
-    self.class.column_names.reject {|col| col == "id"}.join(", ")
+  def ==(other_object)
+    self.id == other_object.id
   end
 
-  def values_for_insert
-    col_names_for_insert.split(", ").collect do |var|
-      val = self.send("#{var}")
-      "'#{val}'"
-    end.join(", ")
+
+  def destroy
+    sql_statement = <<-SQL
+      DELETE from #{self.class.table_name} WHERE id = ?;
+    SQL
+    self.class.db.execute(sql_statement, self.id)
   end
 
-  def self.column_names
-    DB[:conn].results_as_hash = true
-    table_info = DB[:conn].execute("pragma table_info('students')")
-    columns = table_info.collect {|col_info| col_info["name"]}
+  def persisted?
+    !!self.id
   end
 
-  self.column_names.each do |col_name|
-    attr_accessor col_name.to_sym
-  end
-
-  def initialize(attrs = {})
-    attrs.each do |attribute, value|
-      self.send("#{attribute.downcase}=", value)
+  # [:title, :page_count, :genre, :price]
+  def public_values
+    self.class.public_attributes.map do |attribute|
+      self.send("#{attribute}")
     end
   end
 
-  def save
-    sql = <<-SQL  
-      INSERT INTO #{self.table_name_for_insert} (#{self.col_names_for_insert}) VALUES (#{self.values_for_insert})
-    SQL
-    DB[:conn].execute(sql)
-    sql = <<-SQL  
-      SELECT MAX(id) FROM #{self.table_name_for_insert}
-    SQL
-    self.id = DB[:conn].execute(sql)[0][0]
-    self  
-  end
+  private 
 
-  def self.find_by(search)
-    sql = <<-SQL
-      SELECT * FROM #{self.table_name} WHERE #{search.keys[0].to_s} = ?
-    SQL
-    DB[:conn].execute(sql, search.values[0])
-  end
+  # ATTRIBUTES = {
+  #   id: "INTEGER PRIMARY KEY",
+  #   title: "TEXT",
+  #   page_count: "INTEGER",
+  #   genre: "TEXT",
+  #   price: "INTEGER"
+  # }
 
-  def self.find_by_name(name)
-    sql = <<-SQL
-      SELECT * FROM #{self.table_name} WHERE name = ?
-    SQL
-    obj = DB[:conn].execute(sql, name)
+    def insert
+      sql_string = self.class.public_attributes.map {|key| key.to_s }.join(", ")
+      question_marks = self.class.public_attributes.map {|key| "?" }.join(", ")
+      sql = <<-SQL
+        INSERT INTO #{self.class.table_name} (#{sql_string}) VALUES
+          (#{question_marks})
+      SQL
+      self.class.db.execute(sql, *self.public_values)
+      select_last_row = <<-SQL
+        SELECT id FROM #{self.class.table_name} ORDER BY id DESC LIMIT 1
+      SQL
+      id = self.class.db.execute(select_last_row).flatten.first
+      @id = id
+
+    end
+
+    def update
+      sql_string = self.class.public_attributes.map do |attribute|
+        "#{attribute} = ?"
+      end.join(", ")
+      # [:title, :page_count, :genre]
+      # ["title = ?", "page_count = ?"].join(", ")
+      # title = ?, page_count = ?, genre = ?, price = ?
+      sql_statement = <<-SQL
+          UPDATE #{self.class.table_name} SET #{sql_string} WHERE id = ?;
+      SQL
+      self.class.db.execute(sql_statement, *self.public_values, self.id)
+    end
   end
 end

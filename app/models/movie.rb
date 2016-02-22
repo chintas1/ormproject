@@ -1,6 +1,14 @@
 require "net/http"
 require "uri"
-class Movie < InteractiveRecord
+class Movie
+  extend Databaseable::ClassMethods
+  include Databaseable::InstanceMethods
+
+  ATTRIBUTES = {
+    id: "INTEGER PRIMARY KEY",
+    title: "TEXT",
+    genre_id: "INTEGER");
+  }
 
   def self.add_or_find_movie_by_name(movie_name)
     movie = find_movie_by_name(movie_name)

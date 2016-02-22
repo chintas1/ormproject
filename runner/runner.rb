@@ -1,11 +1,11 @@
 require_relative '../config/environment.rb'
 puts "Welcome to your movie collection manager."
+
+
 puts "Please enter a username to create your profile."
 
 controller = UserController.new
 user = controller.new_user
-
-
 
 action=""
 while action != "exit"

@@ -44,7 +44,7 @@ module Databaseable
 
       row = self.db.execute(sql, id)
 
-      self.object_from_row(row.first)
+      self.object_from_row(row.first) unless row.empty?
     end
 
     def find_by_name(name)

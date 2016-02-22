@@ -8,8 +8,7 @@ end
   def new_user
     view = UserCreateView.new
     user_name = view.render
-    current_user = User.new({name: user_name})
-    current_user.save
+    current_user = User.find_or_create_by_name(user_name)
     view = UserWelcomeView.new
     view.render(current_user)
     current_user
@@ -42,8 +41,12 @@ end
   # get favorite movie
   def find_fav_movie(user)
     movie = Movie.find(user.fav_movie_id)
-    view = DisplayFavMovieView.new
-    view.render(movie)
+    unless (movie.nil?)
+      view = DisplayFavMovieView.new
+      view.render(movie)
+    else
+      puts "You don't have a favorite movie."
+    end
   end
 
   def find_movie_data_by_name(movie_name)

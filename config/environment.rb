@@ -2,7 +2,7 @@ require 'bundler/setup'
 
 Bundler.require
 
-DB = {:conn => SQLite3::Database.new("movieapp.db")}
+DB = {:conn => SQLite3::Database.new("db/movieapp.db")}
 
 def exec(query)
   DB[:conn].execute(query)

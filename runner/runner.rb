@@ -28,7 +28,6 @@ while action != "exit"
         when "G"
           controller = UserController.new
           controller.get_fav_genre(user)
-          # puts "Your favorite genre is #{User.get_favorite_genre}."
       end
     when "collection"
       puts "Do you want to add a movie('A'), lookup a movie ('L'), or remove a movie ('R')?"

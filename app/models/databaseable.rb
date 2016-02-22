@@ -113,6 +113,7 @@ module Databaseable
     else
       insert
     end
+    # binding.pry
     self
   end
 

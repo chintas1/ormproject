@@ -9,8 +9,7 @@ DB[:conn].execute("DROP TABLE IF EXISTS connections;")
 create_movies = <<-SQL 
 CREATE TABLE movies(
   id INTEGER PRIMARY KEY,
-  title TEXT,
-  genre TEXT);
+  title TEXT;
 SQL
 #to possible add to movie model later if 
 # we implement the API
@@ -35,8 +34,7 @@ SQL
 create_users = <<-SQL 
 CREATE TABLE users(
   id INTEGER PRIMARY KEY,
-  name TEXT,
-  favorite_movie_id INTEGER);
+  name TEXT;
 SQL
 
 create_connections = <<-SQL 

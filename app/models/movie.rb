@@ -7,8 +7,11 @@ class Movie
   ATTRIBUTES = {
     id: "INTEGER PRIMARY KEY",
     title: "TEXT",
-    genre_id: "INTEGER");
+    genre_id: "INTEGER"
   }
+  attr_accessor(*self.public_attributes)  
+  attr_reader :id
+
 
   def self.add_or_find_movie_by_name(movie_name)
     movie = find_movie_by_name(movie_name)

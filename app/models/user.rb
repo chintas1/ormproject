@@ -5,6 +5,9 @@ class User
   ATTRIBUTES = {
     id: "INTEGER PRIMARY KEY",
     name: "TEXT",
-    fav_movie_id: "INTEGER");
+    fav_movie_id: "INTEGER"
   }
+  attr_accessor(*self.public_attributes)  
+  attr_reader :id
+
 end

@@ -4,6 +4,9 @@ class Genre
 
   ATTRIBUTES = {
     id: "INTEGER PRIMARY KEY",
-    name: "TEXT");
+    name: "TEXT"
   }
+  attr_accessor(*self.public_attributes)  
+  attr_reader :id
+
 end

@@ -57,6 +57,19 @@ module Databaseable
       self.object_from_row(row.first) unless row.empty?
     end
 
+    
+
+    def find_or_create_by_name(name)
+
+      object = find_by_name(name)
+      if object.nil?
+        object = self.new({name: name})
+        object.save
+      else
+        object
+      end
+    end
+
     def all
       sql = <<-SQL
         SELECT * FROM #{self.table_name};

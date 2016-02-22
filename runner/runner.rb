@@ -5,9 +5,11 @@ puts "Please enter a username to create your profile."
 controller = UserController.new
 user = controller.new_user
 
+
+
 action=""
 while action != "exit"
-  puts "Do you want to work on your profile or collection?"
+  puts "Do you want to work on your profile, collection, or exit?"
   action=gets.chomp
   case action
     when "profile"
@@ -15,15 +17,18 @@ while action != "exit"
       action=gets.chomp
       case action
         when "C"
-          puts "Here are the movies in your collection: #{User.movies}"
+          controller = UserController.new
+          controller.display_collection(user)
+          # controller.
+          # puts "Here are the movies in your collection: #{User.movies}"
         when "F"
-          puts "Your favorite movie is #{User.favorite_movie}"
+          controller = UserController.new
+          controller.find_fav_movie(user)
         when "S"
-          puts "What is your favorite movie?"
-          User.favorite_movie=gets.chomp
-          puts "Your favorite movie is now listed as #{User.favorite_movie}"
+          controller = UserController.new
+          controller.set_fav_movie(user)
         when "G"
-          puts "Your favorite genre is #{User.get_favorite_genre}."
+          # puts "Your favorite genre is #{User.get_favorite_genre}."
       end
     when "collection"
       puts "Do you want to add a movie('A'), lookup a movie ('L'), or remove a movie ('R')?"
@@ -32,6 +37,9 @@ while action != "exit"
         when 'A'
           controller = UserController.new
           controller.add_movie(user)
+        when 'L'
+          controller = UserController.new
+          controller.lookup_movie
       end
   end 
 end

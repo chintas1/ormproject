@@ -31,7 +31,7 @@ class InteractiveRecord
 
   def initialize(attrs = {})
     attrs.each do |attribute, value|
-      self.send("#{attribute}=", value)
+      self.send("#{attribute.downcase}=", value)
     end
   end
 

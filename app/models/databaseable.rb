@@ -38,14 +38,24 @@ module Databaseable
     end
 
     def find(id)
-    sql = <<-SQL
-      SELECT * FROM #{self.table_name} WHERE id = ?;
-    SQL
+      sql = <<-SQL
+        SELECT * FROM #{self.table_name} WHERE id = ?;
+      SQL
 
-    row = self.db.execute(sql, id)
+      row = self.db.execute(sql, id)
 
-    self.object_from_row(row.first)
-  end
+      self.object_from_row(row.first)
+    end
+
+    def find_by_name(name)
+      sql = <<-SQL
+        SELECT * FROM #{self.table_name} WHERE name = ?;
+      SQL
+
+      row = self.db.execute(sql, name)
+
+      self.object_from_row(row.first)
+    end      
 
     def all
       sql = <<-SQL

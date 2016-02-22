@@ -162,7 +162,6 @@ module Databaseable
       SQL
       id = self.class.db.execute(select_last_row).flatten.first
       @id = id
-
     end
 
     def update

@@ -16,7 +16,7 @@ end
 
   # add movie to collection
   def add_movie(user)
-    view = UserAddMovieView.new
+    view = UserPromptMovieNameView.new
     movie_name = titlecase(view.render)
     # binding.pry
     movie = Movie.find_or_create_by_name(movie_name)
@@ -67,11 +67,27 @@ end
   end
 
   def lookup_movie
-    view = UserAddMovieView.new
+    view = UserPromptMovieNameView.new
     movie_name = titlecase(view.render)
     view = UserDisplayCollectionView.new
     movie_data = find_movie_data_by_name(movie_name)
     view.render(movie_name, movie_data)
+  end
+
+  def remove_movie(user)
+    view = UserPromptMovieNameView.new
+    movie_name = titlecase(view.render)
+    movie = Movie.find_by_name(movie_name)
+    sql = <<-SQL
+      SELECT moviesuserss.* FROM moviesuserss
+      INNER JOIN movies ON moviesuserss.movie_id = movies.id
+      WHERE moviesuserss.user_id = ? AND moviesuserss.movie_id = ?
+    SQL
+    
+    movie.nil? ? return : join_table_id = DB[:conn].execute(sql, user.id, movie.id).flatten
+    join_table_id.empty? ? return : movie_object = MoviesUsers.object_from_row(join_table_id) 
+    # binding.pry
+    movie_object.destroy
   end
 
   # get favorite genre

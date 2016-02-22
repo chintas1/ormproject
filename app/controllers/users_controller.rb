@@ -19,7 +19,19 @@ end
     view = UserPromptMovieNameView.new
     movie_name = titlecase(view.render)
     # binding.pry
-    movie = Movie.find_or_create_by_name(movie_name)
+    movie_data = self.find_movie_data_by_name(movie_name)
+    if movie_data.fetch(:Response) == "False"
+      puts "Invalid Movie"
+      return
+    else
+      movie = Movie.find_or_create_by_name(movie_name)
+      first_genre = movie_data.fetch(:Genre).split(", ").first
+      genre = Genre.find_or_create_by_name(first_genre)
+      genre.save
+      movie.genre_id = genre.id
+      movie.save
+    end
+
     join_table = MoviesUsers.new({movie_id: movie.id, user_id: user.id})
     join_table.save
     view = MovieAddedView.new
@@ -30,12 +42,23 @@ end
   def set_fav_movie(user)
     view = UserSetFavMovieView.new
     movie_name = titlecase(view.render)
-    movie = Movie.find_or_create_by_name(movie_name)
-    user.fav_movie_id = movie.id
-    join_table = MoviesUsers.new({movie_id: movie.id, user_id: user.id})
-    join_table.save
-    view = MovieAddedView.new
-    view.render(movie)
+
+    movie_data = self.find_movie_data_by_name(movie_name)
+    if movie_data.fetch(:Response) == "False"
+      puts "Invalid Movie"
+      return
+    else
+      movie = Movie.find_or_create_by_name(movie_name)
+      user.fav_movie_id = movie.id
+      first_genre = movie_data.fetch(:Genre).split(", ").first
+      movie.genre = Genre.find_or_create_by_name(first_genre)
+      movie.save
+
+      join_table = MoviesUsers.new({movie_id: movie.id, user_id: user.id})
+      join_table.save
+      view = MovieAddedView.new
+      view.render(movie)
+    end
   end
 
   # get favorite movie
@@ -59,7 +82,7 @@ end
   # display collection
   def display_collection(user)
     view = UserDisplayCollectionView.new
-    movie_names = user.movies.map{|movie_row| movie_row[1]}
+    movie_names = user.movies.map{|movie| movie.name}
     movie_names.each do |movie|
       movie_data = find_movie_data_by_name(movie)
       view.render(movie, movie_data)
@@ -84,13 +107,18 @@ end
       WHERE moviesuserss.user_id = ? AND moviesuserss.movie_id = ?
     SQL
     
-    movie.nil? ? return : join_table_id = DB[:conn].execute(sql, user.id, movie.id).flatten
-    join_table_id.empty? ? return : movie_object = MoviesUsers.object_from_row(join_table_id) 
+    movie.nil? ? return : join_table_row = DB[:conn].execute(sql, user.id, movie.id).flatten
+    join_table_row.empty? ? return : movie_object = MoviesUsers.object_from_row(join_table_row) 
     # binding.pry
     movie_object.destroy
   end
 
   # get favorite genre
+  def get_fav_genre(user)
+    genre_count = user.movies.each_with_object(Hash.new(0)) {|movie, genre_count| genre_count[movie.genre_id] += 1}
+    fav_genre_id = genre_count.sort_by {|genre_id, value| value}.last.first
+    puts Genre.find(fav_genre_id).name
+  end
 end
 
 

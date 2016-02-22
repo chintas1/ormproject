@@ -19,7 +19,8 @@ class User
 
     movies = DB[:conn].execute(sql, self.id)
     # binding.pry
-    movies.uniq
+    movies = movies.uniq
+    Movie.objects_from_rows(movies)
   end
 
 end

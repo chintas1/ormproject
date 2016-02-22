@@ -26,6 +26,8 @@ while action != "exit"
           controller = UserController.new
           controller.set_fav_movie(user)
         when "G"
+          controller = UserController.new
+          controller.get_fav_genre(user)
           # puts "Your favorite genre is #{User.get_favorite_genre}."
       end
     when "collection"

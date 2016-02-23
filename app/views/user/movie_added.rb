@@ -1,5 +1,5 @@
 class MovieAddedView
   def render(movie)
-    puts "Added #{movie.name} to your collection."
+    puts "\nAdded #{movie.name} to your collection."
   end
 end

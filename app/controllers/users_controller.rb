@@ -31,6 +31,19 @@ end
     fav_genre_id = genre_count.sort_by {|genre_id, value| value}.last.first
     puts Genre.find(fav_genre_id).name
   end
+
+  def compare(user)
+    view = UserPromptView.new
+    other_user = User.find_by_name(view.render)
+    if other_user.nil?
+      puts "Invalid User"
+      return nil
+    end
+    self_movies = User.find(user.id).movies.map {|movie| movie.name}
+    other_movies = User.find(other_user.id).movies.map {|movie| movie.name}
+    view = DisplayCompareView.new
+    view.render(self_movies, other_movies, other_user.name)
+  end
 end
 
 

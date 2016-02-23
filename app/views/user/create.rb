@@ -5,7 +5,7 @@ class UserCreateView
     puts "-------- COLLECTION --------"
     puts "--------- MANAGER ----------"
     puts "----------------------------"
-    puts "\nEnter your name to create your profile."
+    puts "\nEnter your username to load up your info or create a new user."
     gets.chomp
   end
 

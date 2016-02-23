@@ -60,7 +60,6 @@ module Databaseable
     
 
     def find_or_create_by_name(name)
-
       object = find_by_name(name)
       if object.nil?
         object = self.new({name: name})
@@ -92,7 +91,6 @@ module Databaseable
       zipped = self.public_attributes.zip(public_values)
       
       hash = Hash[zipped]
-      
       object = self.new(hash)
 
       object.instance_variable_set("@id", row[0])

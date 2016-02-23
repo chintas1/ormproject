@@ -17,13 +17,13 @@ while action != "exit"
       action=gets.chomp
       case action
         when "C"
-          controller = UserController.new
+          controller = MoviesController.new
           controller.display_collection(user)
         when "F"
           controller = UserController.new
           controller.find_fav_movie(user)
         when "S"
-          controller = UserController.new
+          controller = MoviesController.new
           controller.set_fav_movie(user)
         when "G"
           controller = UserController.new
@@ -34,13 +34,13 @@ while action != "exit"
       action=gets.chomp
       case action
         when 'A'
-          controller = UserController.new
+          controller = MoviesController.new
           controller.add_movie(user)
         when 'L'
-          controller = UserController.new
+          controller = MoviesController.new
           controller.lookup_movie
         when 'R'
-          controller = UserController.new
+          controller = MoviesController.new
           controller.remove_movie(user)
       end
   end 

@@ -9,30 +9,37 @@ user = controller.new_user
 
 action=""
 while action != "exit"
-  puts "Do you want to work on your profile, collection, or exit?"
+  puts "\nDo you want to work on your profile, collection, or exit?"
   action=gets.chomp
   case action
     when "profile"
-      puts "Do you want to view your collection('C'), view your favorite movie ('F'), set your favorite movie('S'), or get your favorite genre('G')?"
+      puts "\nDo you want to view your collection('C'), view your favorite movie ('F'), set your favorite movie('S'), get your favorite genre('G'), compare with another user ('U') or exit ('E')?"
       action=gets.chomp
       case action
-        when "C"
+        when 'E'
+          exit
+        when 'C'
           controller = UserController.new
           controller.display_collection(user)
-        when "F"
+        when 'F'
           controller = UserController.new
           controller.find_fav_movie(user)
-        when "S"
+        when 'S'
           controller = UserController.new
           controller.set_fav_movie(user)
-        when "G"
+        when 'G'
           controller = UserController.new
           controller.get_fav_genre(user)
+        when 'U'
+          controller = UserController.new
+          controller.compare(user)
       end
     when "collection"
-      puts "Do you want to add a movie('A'), lookup a movie ('L'), or remove a movie ('R')?"
+      puts "\nDo you want to add a movie('A'), lookup a movie ('L'), remove a movie ('R'), or exit ('E')?"
       action=gets.chomp
       case action
+        when 'E'
+          exit
         when 'A'
           controller = UserController.new
           controller.add_movie(user)

@@ -1,6 +1,6 @@
 class UserPromptMovieNameView
   def render
-    puts "Enter a movie name."
+    puts "\nEnter a movie name."
     movie_name = gets.chomp
   end
 end
